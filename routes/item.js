@@ -3,7 +3,6 @@ import { PrismaClient } from '@prisma/client';
 
 const router = express.Router();
 
-// [심화] 라우터마다 prisma 클라이언트를 생성하고 있다. 더 좋은 방법이 있지 않을까?
 const prisma = new PrismaClient({
   log: ['query', 'info', 'warn', 'error'],
   errorFormat: 'pretty',
