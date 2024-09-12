@@ -13,6 +13,7 @@ const prisma = new PrismaClient({
 router.post('/character/create', authMiddleware, async (req, res) => {
   try {
     const characterName = req.body.characterName;
+    const { accountInfo } = req;
 
     const existAccount = await prisma.character.findUnique({
       where: { characterName: characterName },
@@ -28,6 +29,7 @@ router.post('/character/create', authMiddleware, async (req, res) => {
         health: 500,
         power: 100,
         money: 10000,
+        accountId: accountInfo.accountId,
       },
     });
 
@@ -58,6 +60,7 @@ router.delete('/character/delete/:characterId', authMiddleware, async (req, res)
 router.get('/character/detail/:characterId', authMiddleware, async (req, res) => {
   try {
     const { characterId } = req.params;
+    const { accountInfo } = req;
 
     const findCharacter = await prisma.character.findUnique({
       where: { characterId: +characterId },
@@ -65,15 +68,32 @@ router.get('/character/detail/:characterId', authMiddleware, async (req, res) =>
         characterName: true,
         health: true,
         power: true,
+        money: true,
+        accountId: true,
       },
     });
+
+    const myCharacter = {
+      characterName: findCharacter.characterName,
+      health: findCharacter.health,
+      power: findCharacter.power,
+      money: findCharacter.money,
+    };
+    const Character = {
+      characterName: findCharacter.characterName,
+      health: findCharacter.health,
+      power: findCharacter.power,
+    };
 
     if (findCharacter === null) {
       res.status(404).json({ error: '캐릭터가 존재하지 않습니다.' });
       return;
     }
-
-    res.status(200).json({ character_info: findCharacter });
+    if (accountInfo.accountId === findCharacter.accountId) {
+      res.status(200).json({ character_info: myCharacter });
+    } else {
+      res.status(200).json({ character_info: Character });
+    }
   } catch (err) {
     res.status(500).json({ error: '캐릭터 조회에 실패했어요.' });
     console.log(error);

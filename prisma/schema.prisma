@@ -27,12 +27,16 @@ model character {
   health Int
   power Int
   money Int
+  accountId String
+
+  user account @relation(fields: [accountId], references: [accountId], onDelete: Cascade)
 }
 
 model account {
   accountId String @id
   password String
   userName String
+  character character[]
 }
 
 model characterinventory {
