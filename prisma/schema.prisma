@@ -22,7 +22,11 @@ model item {
 }
 
 model character {
-  characterId Int @id
+  characterId Int @id @default(autoincrement())
+  characterName String @unique
+  health Int
+  power Int
+  money Int
 }
 
 model account {
